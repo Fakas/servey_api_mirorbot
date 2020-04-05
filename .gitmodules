@@ -1,3 +1,3 @@
-[submodule "servey_db_identity"]
+[submodule "identity"]
 	path = identity
 	url = https://github.com/Fakas/servey_db_identity.git
