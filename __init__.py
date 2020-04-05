@@ -1,4 +1,4 @@
-from flask import Flask, send_file
+from flask import Flask, send_file, url_for
 from flask_restplus import Api, Resource, Namespace, reqparse
 from os import path, environ
 from werkzeug.exceptions import HTTPException, NotFound, UnsupportedMediaType, BadRequest
@@ -21,7 +21,16 @@ sound_extensions = ("ogg", "mp3")
 name = "ServeyMcServeface API (Miror Bot)"
 app = Flask(name)
 
-api = Api(app, doc="/")
+
+class SecureApi(Api):
+    @property
+    def specs_url(self):
+        # HTTPS monkey patch
+        scheme = "http" if ":5000" in self.base_url else "https"
+        return url_for(self.endpoint("specs"), _external=True, _scheme=scheme)
+
+
+api = SecureApi(app, doc="/")
 api.title = "ServeyMcServeface API (Miror B.ot)"
 
 announce = Namespace("announce")
