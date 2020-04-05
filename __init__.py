@@ -7,15 +7,14 @@ import json
 from .identity import Schema
 import os
 import fleep
-from typing import Final
 from tinytag import TinyTag
 
 try:
-    DATABASE_URL: Final = environ["SERVEY_DB_URL"]
+    database_url = environ["SERVEY_DB_URL"]
 except KeyError:
     raise EnvironmentError("Environment variable \"SERVEY_DB_URL\" must be set!") from None
 
-identity = Schema(DATABASE_URL)
+identity = Schema(database_url)
 
 sound_extensions = ("ogg", "mp3")
 
