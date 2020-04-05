@@ -1,16 +1,21 @@
 from flask import Flask, send_file
 from flask_restplus import Api, Resource, Namespace, reqparse
-from os import path
+from os import path, environ
 from werkzeug.exceptions import HTTPException, NotFound, UnsupportedMediaType, BadRequest
 from werkzeug.datastructures import FileStorage
 import json
-from identity import Schema
+from .identity import Schema
 import os
 import fleep
+from typing import Final
 from tinytag import TinyTag
-from auth import URL
 
-identity = Schema(URL)
+try:
+    DATABASE_URL: Final = environ["SERVEY_DB_URL"]
+except KeyError:
+    raise EnvironmentError("Environment variable \"SERVEY_DB_URL\" must be set!") from None
+
+identity = Schema(DATABASE_URL)
 
 sound_extensions = ("ogg", "mp3")
 
