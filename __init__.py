@@ -14,8 +14,6 @@ try:
 except KeyError:
     raise EnvironmentError("Environment variable \"SERVEY_DB_URL\" must be set!") from None
 
-identity = Schema(database_url)
-
 sound_extensions = ("ogg", "mp3")
 
 name = "ServeyMcServeface API (Miror Bot)"
@@ -77,8 +75,10 @@ class SetSound(Resource):
     @api.doc("Update a user's announce sound")
     @api.expect(sound_upload)
     def post(api_token):
+        identity = Schema(database_url)
         # Get user ID
         discord_id = identity.get_api_user(api_token)
+        identity.close()
         # Get uploaded file
         sound = sound_upload.parse_args()["audio_file"]
         sound_file = sound.stream
@@ -87,7 +87,9 @@ class SetSound(Resource):
 
 
 def get_announce_sound(discord_id):
+    identity = Schema(database_url)
     identity.register_event("ANONYMOUS", "ANNOUNCE_SOUND_GET", ip_addr=request.remote_addr)
+    identity.close()
     for extension in sound_extensions:
         file_path = path.join(directory_sounds, f"{discord_id}.{extension}")
         if path.exists(file_path):
@@ -96,7 +98,9 @@ def get_announce_sound(discord_id):
 
 
 def set_announce_sound(discord_id, sound_file):
+    identity = Schema(database_url)
     identity.register_event(discord_id, "ANNOUNCE_SOUND_SET", ip_addr=request.remote_addr)
+    identity.close()
     # Check file isn't too big
     sound_file.seek(0, os.SEEK_END)
     size = sound_file.tell()
