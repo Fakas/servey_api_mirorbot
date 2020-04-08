@@ -1,4 +1,4 @@
-from flask import Flask, send_file, url_for
+from flask import Flask, send_file, url_for, request
 from flask_restplus import Api, Resource, Namespace, reqparse
 from os import path, environ
 from werkzeug.exceptions import HTTPException, NotFound, UnsupportedMediaType, BadRequest
@@ -87,7 +87,7 @@ class SetSound(Resource):
 
 
 def get_announce_sound(discord_id):
-    identity.register_event("ANONYMOUS", "ANNOUNCE_SOUND_GET")
+    identity.register_event("ANONYMOUS", "ANNOUNCE_SOUND_GET", ip_addr=request.remote_addr)
     for extension in sound_extensions:
         file_path = path.join(directory_sounds, f"{discord_id}.{extension}")
         if path.exists(file_path):
@@ -96,7 +96,7 @@ def get_announce_sound(discord_id):
 
 
 def set_announce_sound(discord_id, sound_file):
-    identity.register_event(discord_id, "ANNOUNCE_SOUND_SET")
+    identity.register_event(discord_id, "ANNOUNCE_SOUND_SET", ip_addr=request.remote_addr)
     # Check file isn't too big
     sound_file.seek(0, os.SEEK_END)
     size = sound_file.tell()
